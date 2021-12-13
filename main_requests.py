@@ -27,15 +27,20 @@ def search_tweets(query_params):
 def filter_tweets(tweet_id_text_dictionary):
     filtered_tweets = {}
     for key, value in tweet_id_text_dictionary.items():
-        tweet_lower = value.lower()
-        if 'trinkwasser' in tweet_lower:
+        tweet_lower = value['text'].lower()
+        if 'entwarnung' in tweet_lower:
             filtered_tweets[key] = value
-        elif 'h20' in tweet_lower:
+        elif 'bauarbeiten' in tweet_lower:
             filtered_tweets[key] = value
-        elif 'wastewater' in tweet_lower:
+        elif 'gesundheitsamt' in tweet_lower:
             filtered_tweets[key] = value
-        elif 'wasserkreislauf' in tweet_lower:
+        elif 'leitungswasser' in tweet_lower:
             filtered_tweets[key] = value
+        elif 'keime' in tweet_lower:
+            filtered_tweets[key] = value
+        elif 'qualitätsmängeln' in tweet_lower:
+            filtered_tweets[key] = value
+
     return filtered_tweets
 
 
@@ -49,10 +54,10 @@ def write_meta_file(latest_processed_tweet_id):
 
 def prepare_query_parameters():
     wasserbetriebe_twitter_bot_meta_info = Path("wasserbetriebe_twitter_bot_meta_info.txt")
-    today = datetime.datetime.today()
-    week_ago = today - datetime.timedelta(weeks=1)
-    date_in_isoformat = week_ago.isoformat(timespec="seconds")
-    query_params = {'start_time': f"{date_in_isoformat}Z", 'tweet.fields': 'created_at', 'max_results': 100}
+    #today = datetime.datetime.today()
+    #week_ago = today - datetime.timedelta(weeks=1)
+    #date_in_isoformat = week_ago.isoformat(timespec="seconds")
+    query_params = {'start_time': '2021-08-01T00:00:00Z', 'tweet.fields': 'created_at', 'max_results': 100}
     if wasserbetriebe_twitter_bot_meta_info.is_file():
         with open(wasserbetriebe_twitter_bot_meta_info) as f:
             lines = f.readlines()
@@ -66,13 +71,19 @@ def prepare_query_parameters():
 def prepare_tweets_response(json_response):
     if json_response['meta']['result_count'] == 0:
         return {}
+
     if 'meta' in json_response and 'newest_id' in json_response['meta']:
         latest_processed_tweet_id = json_response['meta']['newest_id']
         write_meta_file(latest_processed_tweet_id)
     data_ = json_response['data']
     tweet_id_text_dictionary = {}
     for tweet in data_:
-        tweet_id_text_dictionary[tweet['id']] = tweet['text']
+        tweet_info = {
+            'text': tweet['text'],
+            'date': tweet['created_at']
+        }
+        tweet_id_text_dictionary[tweet['id']] = tweet_info
+
     return tweet_id_text_dictionary
 
 
@@ -84,11 +95,12 @@ def fetch_tweets_from_last_week():
 
 
 def show_tweets(tweets):
-    print('Those are the tweets could indicate some water problems in Berlin from @Wasserbetriebe: \n')
     tweet_number = 0
-    for tweet_id, tweet_text in tweets.items():
-        tweet_number = tweet_number + 1
-        print(f"Tweet: {tweet_number} \n {tweet_id}: \n {tweet_text}")
+    for tweet_id, tweet_info in tweets.items():
+        tweet_number += 1
+        print(f"Tweet: {tweet_number} \n https://twitter.com/wasserbetriebe/status/{tweet_id}: \n {tweet_info['date']} \n {tweet_info['text']}")
+    if tweet_number == 0:
+        print("No new tweets found")
 
 
 def main():
