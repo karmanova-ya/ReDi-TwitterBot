@@ -45,9 +45,7 @@ def filter_tweets_v2(tweet_id_text_dictionary):
     filtered_tweets = {}
     for key, value in tweet_id_text_dictionary.items():
         tweet_lower = value.lower()
-        if 'trinkwasser' in tweet_lower:
-            filtered_tweets[key] = value
-        elif 'entwarnung' in tweet_lower:
+        if 'entwarnung' in tweet_lower:
             filtered_tweets[key] = value
         elif 'bauarbeiten' in tweet_lower:
             filtered_tweets[key] = value
@@ -61,6 +59,13 @@ def filter_tweets_v2(tweet_id_text_dictionary):
             filtered_tweets[key] = value
         elif 'gatow' in tweet_lower:
             filtered_tweets[key] = value
+        elif 'keime' in tweet_lower:
+            filtered_tweets[key] = value
+        elif 'qualitätsmängeln' in tweet_lower:
+            filtered_tweets[key] = value
+        elif 'trinkwasser' in tweet_lower:
+            filtered_tweets[key] = value
+
     return filtered_tweets
 
 
