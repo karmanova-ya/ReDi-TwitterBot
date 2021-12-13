@@ -2,7 +2,6 @@ from pprint import pprint
 
 import requests
 import os
-import json
 from pathlib import Path
 
 # To set your environment variables in your terminal run the following line:
@@ -25,23 +24,7 @@ def search_tweets(query_params):
     return response.json()
 
 
-def filter_tweets(tweets):
-    filtered_tweets = []
-    for tweet in tweets:
-        tweet_lower = tweet.lower()
-        if 'trinkwasser' in tweet_lower:
-            filtered_tweets.append(tweet)
-        elif 'h20' in tweet_lower:
-            filtered_tweets.append(tweet)
-        elif 'wastewater' in tweet_lower:
-            filtered_tweets.append(tweet)
-        elif 'wasserkreislauf' in tweet_lower:
-            filtered_tweets.append(tweet)
-
-    return filtered_tweets
-
-
-def filter_tweets_v2(tweet_id_text_dictionary):
+def filter_tweets(tweet_id_text_dictionary):
     filtered_tweets = {}
     for key, value in tweet_id_text_dictionary.items():
         tweet_lower = value.lower()
@@ -105,7 +88,7 @@ def main():
         tweet_id_text_dictionary = {}
         for tweet in data_:
             tweet_id_text_dictionary[tweet['id']] = tweet['text']
-        filtered_tweets = filter_tweets_v2(tweet_id_text_dictionary)
+        filtered_tweets = filter_tweets(tweet_id_text_dictionary)
         pprint(filtered_tweets)
     else:
         print("No new tweets found")
