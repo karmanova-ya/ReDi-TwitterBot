@@ -9,18 +9,7 @@ from pathlib import Path
 # export 'BEARER_TOKEN'='<your_bearer_token>' or in PyCharm add  environment variable for the script Run/Debug configuration
 # -> Edit Configuration -> Environment Variables
 bearer_token = os.environ.get("BEARER_TOKEN")
-# search_url = "https://api.twitter.com/2/tweets/search/recent"       # recent - return tweets for last 7 calendar days
-search_url = "https://api.twitter.com/2/users/18899040/tweets"  # recent - return tweets for last 7 calendar days
-
-
-# Optional params: start_time,end_time,since_id,until_id,max_results,next_token,
-# expansions,tweet.fields,media.fields,poll.fields,place.fields,user.fields
-# https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-recent
-# query_params = {'query': 'from:wasserbetriebe', 'tweet.fields': 'created_at',
-#                 'end_time': '2021-12-08T04:59:59Z'}  # here end_time should be calculated dynamically
-
-
-# or switch to "since_id" optional parameter. In this case we need to store id of the latest processed tweet or pass start_time
+search_url = "https://api.twitter.com/2/users/18899040/tweets"
 
 def bearer_authorization(request):
     # Method required by bearer token authentication.
@@ -58,11 +47,19 @@ def filter_tweets_v2(tweet_id_text_dictionary):
         tweet_lower = value.lower()
         if 'trinkwasser' in tweet_lower:
             filtered_tweets[key] = value
-        elif 'h20' in tweet_lower:
+        elif 'entwarnung' in tweet_lower:
             filtered_tweets[key] = value
-        elif 'wastewater' in tweet_lower:
+        elif 'bauarbeiten' in tweet_lower:
             filtered_tweets[key] = value
-        elif 'wasserkreislauf' in tweet_lower:
+        elif 'gesundheitsamt' in tweet_lower:
+            filtered_tweets[key] = value
+        elif 'leitungswasser' in tweet_lower:
+            filtered_tweets[key] = value
+        elif 'spandau' in tweet_lower:
+            filtered_tweets[key] = value
+        elif 'wilhelmstadt' in tweet_lower:
+            filtered_tweets[key] = value
+        elif 'gatow' in tweet_lower:
             filtered_tweets[key] = value
     return filtered_tweets
 
@@ -98,14 +95,16 @@ def main():
     if 'meta' in json_response and 'newest_id' in json_response['meta']:
         latest_processed_tweet_id = json_response['meta']['newest_id']
         write_meta_file(latest_processed_tweet_id)
-    data_ = json_response['data']
-    tweet_id_text_dictionary = {}
-    for tweet in data_:
-        tweet_id_text_dictionary[tweet['id']] = tweet['text']
-    filtered_tweets = filter_tweets_v2(tweet_id_text_dictionary)
-    print(filtered_tweets)
+    if 'data' in json_response:
+        data_ = json_response['data']
+        tweet_id_text_dictionary = {}
+        for tweet in data_:
+            tweet_id_text_dictionary[tweet['id']] = tweet['text']
+        filtered_tweets = filter_tweets_v2(tweet_id_text_dictionary)
+        pprint(filtered_tweets)
+    else:
+        print("No new tweets found")
     # print(json.dumps(json_response, indent=4, sort_keys=True))        # parse, format and sort response Json text
-    # pprint(json_response)  # does the same as previous code line, but less pretty
 
 
 if __name__ == "__main__":
