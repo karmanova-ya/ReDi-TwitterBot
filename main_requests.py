@@ -40,6 +40,10 @@ def filter_tweets(tweet_id_text_dictionary):
             filtered_tweets[key] = value
         elif 'qualitätsmängeln' in tweet_lower:
             filtered_tweets[key] = value
+        elif 'Coliformen' in tweet_lower:
+            filtered_tweets[key] = value
+        elif 'UV-Desinfektion' in tweet_lower:
+            filtered_tweets[key] = value
 
     return filtered_tweets
 
@@ -54,9 +58,11 @@ def write_meta_file(latest_processed_tweet_id):
 
 def prepare_query_parameters():
     wasserbetriebe_twitter_bot_meta_info = Path("wasserbetriebe_twitter_bot_meta_info.txt")
+    #To determine a time period in searches
     #today = datetime.datetime.today()
     #week_ago = today - datetime.timedelta(weeks=1)
     #date_in_isoformat = week_ago.isoformat(timespec="seconds")
+    #query_params = {'start_time': f"{date_in_isoformat}Z", 'tweet.fields': 'created_at', 'max_results': 100}
     query_params = {'start_time': '2021-08-01T00:00:00Z', 'tweet.fields': 'created_at', 'max_results': 100}
     if wasserbetriebe_twitter_bot_meta_info.is_file():
         with open(wasserbetriebe_twitter_bot_meta_info) as f:
